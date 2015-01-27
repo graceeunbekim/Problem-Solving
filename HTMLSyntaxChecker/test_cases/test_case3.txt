@@ -1,0 +1,6 @@
+5 
+ This case starts out fine <OKAY> and has bad stuff later on. 
+ <GOOD> All is still okay, but later an error is coming up. 
+ </GOOD> We're still in the good to this point! <THISISTOOLONG> 
+ This line will be skipped. 
+ As will this one.

@@ -1,0 +1,3 @@
+2 
+ This has a null tag <> 
+ And an extra line after the error

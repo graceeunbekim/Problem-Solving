@@ -1,0 +1,2 @@
+1 
+ This is an interesting error: <ERROR

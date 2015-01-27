@@ -1,0 +1,8 @@
+6 
+
+This is some ordinary text. 
+
+<BEGIN> This is included in the BEGIN tag </BEGIN> 
+ <START> Here's some stuff 
+ and so is this
+ more stuff. </START>
