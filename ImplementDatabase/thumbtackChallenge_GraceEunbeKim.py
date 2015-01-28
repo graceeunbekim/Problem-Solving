@@ -4,7 +4,6 @@
 # Simple DataBase Challenge
 
 import sys
-from abc import ABCMeta, abstractmethod
 
 """
 Constant variable names for the database commands.
@@ -20,37 +19,31 @@ ROLLBACK   = "ROLLBACK"
 NULL       = "NULL"
 INCORRECT  = "Incorrect Commands"
 NOTRANSAC  = "NO TRANSACTION"
-DATABASE   = {}
 
 class Commands:
 	"""	
-	Abstraction class for Commands received through standard input that are
+	Class for commands received through standard input that are
 	later used for the Transaction and Data classes for the database
 	execution. Transaction and Data classes overrides setVal(), getVal(),
 	unsetVal(), and endProgram().
 	"""
-	def __init__(self):
-		self.d = DATABASE
-		self.vals = []
+
+	def __init__(self, d={}):
+		self.d = d
 
 	def setVal(self, name, value):
 		"""overrides setVal() function in Commands abstract class."""
 		d = self.d
-		vals = self.vals
-
-		vals.append(value)
-		d[name] = vals	
+		d[name] = value
 
 	def getVal(self, name):
 		"""overrides getVal() function in Commands abstract class."""
 		try: 
 			d = self.d
 			if (name in d.keys()):
-				# displayOutput(d[name])
-				print d[name]
+				sys.stdout.write(d[name])
 			else:
-				# displayOutput(NULL)
-				print NULL
+				sys.stdout.write(NULL)
 		except KeyError, e:
 			print e
 		except IndexError, e:
@@ -73,15 +66,13 @@ class Commands:
 			print e
 
 
-class Data(Commands):
+class Data:
 	"""
 	Data class inherits from the abstract class Commands for the core
 	exceutions and its own exceution 'NUMEQUALTO'.
 	"""
-
-	def __init__(self):
-		self.d = DATABASE
-		self.vals = []
+	def __init__(self, d={}):
+		self.d = d
 
 	def runNumberQualTo(self, value):
 		""" Print out the number of variables that are currently set to value. 
@@ -90,7 +81,7 @@ class Data(Commands):
 		count = 0
 		try:
 			for k,v in d.items():
-				if (value in v):
+				if (value == v):
 					count += 1
 			print count
 		except KeyError, e:
@@ -100,37 +91,33 @@ class Data(Commands):
 		except Exception, e:
 			print e
 
-class Transaction(Commands):
+class Transaction:
 	"""
 	Transaction class inherits from the abstract class Commands for the core
 	exceutions and its own exceutions such as 'COMMIT', 'BEGIN', and 'ROLLBACK'.
 	"""
+	def __init__(self, d={}):
+		self.d = d
 
-	def __init__(self):
-		self.d = DATABASE
-		self.vals = []
-
-	def begin(self):
+	def begin(self, stack):
 		"""Open a new transaction block. Transaction blocks can be nested; 
 		   a BEGIN can be issued inside of an existing block."""
 		pass
 
-	def rollback(self, stack):
+	def rollback(self, dictionary, old_commands):
 		"""Undo all of the commands issued in the most recent transaction block, 
 		   and close the block. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
-		d = self.d
 
-		if (len(stack) == 0):
-			print NOTRANSAC
+		if (len(old_commands.keys()) == 0):
+			sys.stdout.write(NOTRANSAC)
 		else:
-			last_commend = stack.pop()
-			words = last_commend.split(' ')
-			print last_commend
-
 			try:
-				if (words[1] in d.keys()):
-					del d[words[1]][-1]
+				# UPDATE THE DATABASE TO THE OLD ONE
+				dictionary = old_commands
+				print old_commands
+				print self.d
+
 			except KeyError, e:
 				print e
 			except IndexError, e:
@@ -145,57 +132,65 @@ class Transaction(Commands):
 		stack = []
 
 
-def displayOutput(result):
-	"""
+class Factory:
+	""" factory of command executions. """
 
-	"""
-	sys.stdout.write(result)
+	def main(self):
+		""" main() function to instantiate two classes for Data and Transaction commands.
+			standard input is read until END is input; otherwise, program
+			executes and displays the output of the commands. """
 
-def main():
-	""" main() function to instantiate two classes for Data and Transaction commands.
-		standard input is read until END is input; otherwise, program
-		executes and displays the output of the commands. """
-	current_command = None
-	dataCommand = Data()
-	tranCommand = Transaction()
-	stack = []
+		current_command = None
+		d = {}
+		old_commands = {}
 
-	while True:
-		userinput = sys.stdin.readline().rstrip('\n')#.split(' ')
-		words = userinput.split(' ')
+		while True:
+			commands = Commands(d)
+			dataCommand = Data(d)
+			tranCommand = Transaction(d)
+
+			userinput = sys.stdin.readline().rstrip('\n')#.split(' ')
+			words = userinput.split(' ')
+
+
+			# execution ends
+			if userinput == END:
+				break
+
+			# detect commands for command class
+			if (words[0] == SET):
+				commands.setVal(words[1], words[2])
+
+			elif (words[0] == GET):
+				commands.getVal(words[1])
+
+			elif (words[0] == UNSET):
+				commands.unsetVal(words[1])
+
+			# detect commands for data class
+			elif (words[0] == NUMEQUALTO):
+				dataCommand.runNumberQualTo(words[1])
+
+			# detect commands for transaction class
+			elif (userinput == BEGIN):
+				old_commands = d.copy()
+				print old_commands
+			
+			elif (userinput == ROLLBACK):
+				#tranCommand.rollback(d, old_commands)
+				if (old_commands == d):
+					sys.stdout.write(NOTRANSAC)
+				else:
+					d = old_commands
+
+			elif (userinput == COMMIT):
+				old_commands = d
 		
-		if userinput == END:
-			break
+			else:
+				current_command = userinput
+				print INCORRECT
 
-		# detect commands for data class
-		if (words[0] == SET):
-			dataCommand.setVal(words[1], words[2])
-
-		elif (words[0] == GET):
-			dataCommand.getVal(words[1])
-
-		elif (words[0] == NUMEQUALTO):
-			dataCommand.runNumberQualTo(words[1])
-
-		elif (words[0] == UNSET):
-			dataCommand.unsetVal(words[1])
-
-		# detect commands for transaction class
-		elif (userinput == BEGIN):
-			pass
-		
-		elif (userinput == ROLLBACK):
-			tranCommand.rollback(stack)
-
-		elif (userinput == COMMIT):
-			tranCommand.commit
-	
-		else:
-			current_command = userinput
-			print INCORRECT
-
-		stack.append(userinput)
-
-main()
+f = Factory()
+f.main()
 
 
