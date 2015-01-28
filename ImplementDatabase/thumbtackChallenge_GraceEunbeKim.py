@@ -143,6 +143,7 @@ class Factory:
 		current_command = None
 		d = {}
 		old_commands = {}
+		old_tables = []
 
 		while True:
 			commands = Commands(d)
@@ -173,11 +174,13 @@ class Factory:
 
 			# detect commands for transaction class
 			elif (userinput == BEGIN):
-				old_commands = d.copy()
-				print old_commands
+				old_tables.append(d.copy())				
+				#old_commands = d.copy()
+				print old_tables
 			
 			elif (userinput == ROLLBACK):
 				#tranCommand.rollback(d, old_commands)
+				old_commands = old_tables.pop()
 				if (old_commands == d):
 					sys.stdout.write(NOTRANSAC)
 				else:
