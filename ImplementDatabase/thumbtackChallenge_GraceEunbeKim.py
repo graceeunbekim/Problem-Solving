@@ -19,13 +19,8 @@ COMMIT     = "COMMIT"
 ROLLBACK   = "ROLLBACK"
 NULL       = "NULL"
 INCORRECT  = "Incorrect Commands"
-
-def displayOutput(result):
-	"""
-
-	"""
-	sys.stdout.write(result)
-
+NOTRANSAC  = "NO TRANSACTION"
+DATABASE   = {}
 
 class Commands:
 	"""	
@@ -34,39 +29,48 @@ class Commands:
 	execution. Transaction and Data classes overrides setVal(), getVal(),
 	unsetVal(), and endProgram().
 	"""
-	__metaclass__ = ABCMeta
-
 	def __init__(self):
-		pass
+		self.d = DATABASE
+		self.vals = []
 
-	@abstractmethod
-	def detectCommands(self):
-		"""detect command lines from the standard input."""
-		pass
-
-	@abstractmethod
 	def setVal(self, name, value):
-		"""Set the variable name to the value value. 
-		   Neither variable names nor values will contain spaces"""
-		pass
+		"""overrides setVal() function in Commands abstract class."""
+		d = self.d
+		vals = self.vals
 
-	@abstractmethod
+		vals.append(value)
+		d[name] = vals	
+
 	def getVal(self, name):
-		"""Print out the value of the variable name, 
-		   or NULL if that variable is not set."""
-		pass
+		"""overrides getVal() function in Commands abstract class."""
+		try: 
+			d = self.d
+			if (name in d.keys()):
+				# displayOutput(d[name])
+				print d[name]
+			else:
+				# displayOutput(NULL)
+				print NULL
+		except KeyError, e:
+			print e
+		except IndexError, e:
+			print e
+		except Exception, e:
+			print e
 
-	@abstractmethod
+
 	def unsetVal(self, name):
-		"""Unset the variable name, making it just like that 
-		   variable was never set."""
-		pass
-
-	@abstractmethod
-	def endProgram(self):
-		""" Exit the program. Your program will always receive 
-		    this as its last command."""
-		pass
+		"""overrides unsetVal() function in Commands abstract class."""
+		d = self.d
+		try:
+			if (name in d.keys()):
+				del d[name]
+		except KeyError, e:
+			print e
+		except IndexError, e:
+			print e
+		except Exception, e:
+			print e
 
 
 class Data(Commands):
@@ -76,87 +80,25 @@ class Data(Commands):
 	"""
 
 	def __init__(self):
-		self.database = {}
-
-	def detectCommands(self, words):
-		"""detectCommands finds which function will be executed depending
-		on the command received from the standard input. """
-		words = words.split(' ')
-
-		key = words[0]
-
-		if (key == SET):
-			self.setVal(words[1], words[2])
-
-		elif (key == GET):
-			self.getVal(words[1])
-
-		elif (key == UNSET):
-			self.unsetVal(words[1])
-
-		elif (key == NUMEQUALTO):
-			self.runNumberQualTo(words[1])
-
-		elif (key == END):
-			return
-
-		else:
-			print INCORRECT
-
-
-	def setVal(self, name, value):
-		"""overrides setVal() function in Commands abstract class."""
-		d = self.database
-		vals = []
-
-		vals.append(value)
-
-		d[name] = vals		
-
-	def getVal(self, name):
-		"""overrides getVal() function in Commands abstract class."""
-		try: 
-			d = self.database
-			if (d[name] in d):
-				# displayOutput(d[name])
-				print d[name]
-			else:
-				# displayOutput(NULL)
-				print NULL
-		except KeyError, e:
-			print e
-		except IndexError, e:
-			print e
-		except Exception, e:
-			print e
-
-
-	def unsetVal(self, name):
-		"""overrides unsetVal() function in Commands abstract class."""
-		d = self.database
-		try:
-			if (d[name] in d):
-				del d[name]
-		except KeyError, e:
-			print e
-		except IndexError, e:
-			print e
-		except Exception, e:
-			print e
-
-	def endProgram(self):
-		"""overrides endProgram() function in Commands abstract class."""
-		pass
+		self.d = DATABASE
+		self.vals = []
 
 	def runNumberQualTo(self, value):
 		""" Print out the number of variables that are currently set to value. 
 		    If no variables equal that value, print 0"""
-		d = self.database
+		d = self.d
 		count = 0
-		for k,v in d.items():
-			if (v == value):
-				count += 1
-		return count
+		try:
+			for k,v in d.items():
+				if (value in v):
+					count += 1
+			print count
+		except KeyError, e:
+			print e
+		except IndexError, e:
+			print e
+		except Exception, e:
+			print e
 
 class Transaction(Commands):
 	"""
@@ -165,98 +107,49 @@ class Transaction(Commands):
 	"""
 
 	def __init__(self):
-		self.database = {}
-
-	def detectCommands(self, words):
-		"""detectCommands finds which function will be executed depending
-		on the command received from the standard input. """
-		words.split(' ')
-		key = words[0]
-
-		if (key == SET):
-			self.setVal(words[1], words[2])
-
-		elif (key == GET):
-			self.getVal(words[1])
-
-		elif (key == UNSET):
-			self.unsetVal(words[1])
-
-		elif (key == END):
-			return
-
-		elif (key == BEGIN):
-			self.begin()
-
-		elif (key == COMMIT):
-			self.commit()
-
-		elif (key == ROLLBACK):
-			self.rollback()
-
-		else:
-			return INCORRECT
-
-	def setVal(self, name, value):
-		"""overrides setVal() function in Commands abstract class."""
-		d = self.database
-		vals = []
-
-		vals.append(value)
-
-		d[name] = vals
-
-	def getVal(self, name):
-		"""overrides getVal() function in Commands abstract class."""
-		try: 
-			d = self.database
-			if (d[name]):
-				# displayOutput(d[name])
-				print d[name]
-			else:
-				# displayOutput(NULL)
-				print NULL
-		except KeyError, e:
-			print e
-		except IndexError, e:
-			print e
-		except Exception, e:
-			print e
-
-	def unsetVal(self, name):
-		"""overrides unsetVal() function in Commands abstract class."""
-		d = self.database
-		try:
-			if (d[name] in d):
-				del d[name]
-		except KeyError, e:
-			print e
-		except IndexError, e:
-			print e
-		except Exception, e:
-			print e
-
-	def endProgram(self):
-		"""overrides endProgram() function in Commands abstract class."""
-		pass
+		self.d = DATABASE
+		self.vals = []
 
 	def begin(self):
 		"""Open a new transaction block. Transaction blocks can be nested; 
 		   a BEGIN can be issued inside of an existing block."""
 		pass
 
-	def rollback(self):
+	def rollback(self, stack):
 		"""Undo all of the commands issued in the most recent transaction block, 
 		   and close the block. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
-		pass
+		d = self.d
 
-	def commit(self):
+		if (len(stack) == 0):
+			print NOTRANSAC
+		else:
+			last_commend = stack.pop()
+			words = last_commend.split(' ')
+			print last_commend
+
+			try:
+				if (words[1] in d.keys()):
+					del d[words[1]][-1]
+			except KeyError, e:
+				print e
+			except IndexError, e:
+				print e
+			except Exception, e:
+				print e
+
+	def commit(self, stack):
 		"""Close all open transaction blocks, permanently applying the 
 		   changes made in them. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
-		pass
+		stack = []
 
+
+def displayOutput(result):
+	"""
+
+	"""
+	sys.stdout.write(result)
 
 def main():
 	""" main() function to instantiate two classes for Data and Transaction commands.
@@ -265,16 +158,43 @@ def main():
 	current_command = None
 	dataCommand = Data()
 	tranCommand = Transaction()
-	
+	stack = []
+
 	while True:
 		userinput = sys.stdin.readline().rstrip('\n')#.split(' ')
-		dataCommand.detectCommands(userinput)
+		words = userinput.split(' ')
+		
 		if userinput == END:
 			break
-		if userinput == BEGIN:
-			tranCommand.detectCommands(userinput)
+
+		# detect commands for data class
+		if (words[0] == SET):
+			dataCommand.setVal(words[1], words[2])
+
+		elif (words[0] == GET):
+			dataCommand.getVal(words[1])
+
+		elif (words[0] == NUMEQUALTO):
+			dataCommand.runNumberQualTo(words[1])
+
+		elif (words[0] == UNSET):
+			dataCommand.unsetVal(words[1])
+
+		# detect commands for transaction class
+		elif (userinput == BEGIN):
+			pass
+		
+		elif (userinput == ROLLBACK):
+			tranCommand.rollback(stack)
+
+		elif (userinput == COMMIT):
+			tranCommand.commit
+	
 		else:
 			current_command = userinput
+			print INCORRECT
+
+		stack.append(userinput)
 
 main()
 
