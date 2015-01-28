@@ -2,7 +2,6 @@
 # Contact: eunbegracekim40@gmail.com
 # Thumbtack Remote Programming Challenge
 # Simple DataBase Challenge
-
 import sys
 
 """
@@ -108,7 +107,6 @@ class Transaction:
 		"""Undo all of the commands issued in the most recent transaction block, 
 		   and close the block. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
-
 		pass
 
 	def commit(self, stack):
@@ -119,9 +117,12 @@ class Transaction:
 
 
 class Factory:
-	""" factory of command executions. """
+	""" Factory class takes standard input from consol and first sanitize
+		the input to make sure to be correctly formatted. If it's incorrect,
+		it returns INCORRECT; otherwise, execute the command. """
 
 	def inputCheck(self, words, command):
+		""" """
 		if (command == SET):
 			if (len(words) != 3):
 				sys.stdout.write(INCORRECT+NEWLINE)
