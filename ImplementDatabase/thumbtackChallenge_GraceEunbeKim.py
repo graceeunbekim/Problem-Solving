@@ -89,7 +89,8 @@ class Data:
 			for k,v in d.items():
 				if (value == v):
 					count += 1
-			sys.stdout.write(str(count)+NEWLINE)
+			print count
+			# sys.stdout.write(str(count)+NEWLINE)
 		except KeyError, e:
 			print e
 		except IndexError, e:
@@ -180,12 +181,8 @@ class Factory:
 				if userinput == END:
 					break
 
-				# new line detection
-				if userinput == ('\n'):
-					pass
-
 				# detect commands for command class
-				if (words[0] == SET):
+				elif (words[0] == SET):
 					commands.setVal(words[1], words[2])
 
 				elif (words[0] == GET):
