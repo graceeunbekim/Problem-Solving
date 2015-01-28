@@ -22,22 +22,22 @@ NOTRANSAC  = "NO TRANSACTION"
 
 class Commands:
 	"""	
-	Class for commands received through standard input that are
-	later used for the Transaction and Data classes for the database
-	execution. Transaction and Data classes overrides setVal(), getVal(),
-	unsetVal(), and endProgram().
+	Commands class implements setVal(), getVal(), and unsetVal() and after
+	SET execution, it stores the name and the value into a dictionary.
 	"""
 
 	def __init__(self, d={}):
 		self.d = d
 
 	def setVal(self, name, value):
-		"""overrides setVal() function in Commands abstract class."""
+		"""Set the variable name to the value value. 
+		   Neither variable names nor values will contain spaces."""
 		d = self.d
 		d[name] = value
 
 	def getVal(self, name):
-		"""overrides getVal() function in Commands abstract class."""
+		"""Print out the value of the variable name, 
+		   or NULL if that variable is not set."""
 		try: 
 			d = self.d
 			if (name in d.keys()):
@@ -53,7 +53,7 @@ class Commands:
 
 
 	def unsetVal(self, name):
-		"""overrides unsetVal() function in Commands abstract class."""
+		"""Unset the variable name, making it just like that variable was never set."""
 		d = self.d
 		try:
 			if (name in d.keys()):
@@ -68,22 +68,21 @@ class Commands:
 
 class Data:
 	"""
-	Data class inherits from the abstract class Commands for the core
-	exceutions and its own exceution 'NUMEQUALTO'.
+	Data class implements 'NUMEQUALTO', which appears only in Data Commands.
 	"""
 	def __init__(self, d={}):
 		self.d = d
 
 	def runNumberQualTo(self, value):
-		""" Print out the number of variables that are currently set to value. 
-		    If no variables equal that value, print 0"""
+		""" standard output for the number of variables that are currently set to value. 
+		    If no variables equal that value, writes 0"""
 		d = self.d
 		count = 0
 		try:
 			for k,v in d.items():
 				if (value == v):
 					count += 1
-			print count
+			sys.stdout.write(str(count))
 		except KeyError, e:
 			print e
 		except IndexError, e:
@@ -93,52 +92,41 @@ class Data:
 
 class Transaction:
 	"""
-	Transaction class inherits from the abstract class Commands for the core
-	exceutions and its own exceutions such as 'COMMIT', 'BEGIN', and 'ROLLBACK'.
+	Transaction class implements its own exceutions such as 'COMMIT', 'BEGIN', and 'ROLLBACK'.
 	"""
 	def __init__(self, d={}):
 		self.d = d
 
-	def begin(self, stack):
+	def begin(self, current_table, old_tables):
 		"""Open a new transaction block. Transaction blocks can be nested; 
 		   a BEGIN can be issued inside of an existing block."""
-		pass
+		old_tables.append(current_table)
+
 
 	def rollback(self, dictionary, old_commands):
 		"""Undo all of the commands issued in the most recent transaction block, 
 		   and close the block. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
 
-		if (len(old_commands.keys()) == 0):
-			sys.stdout.write(NOTRANSAC)
-		else:
-			try:
-				# UPDATE THE DATABASE TO THE OLD ONE
-				dictionary = old_commands
-				print old_commands
-				print self.d
-
-			except KeyError, e:
-				print e
-			except IndexError, e:
-				print e
-			except Exception, e:
-				print e
+		pass
 
 	def commit(self, stack):
 		"""Close all open transaction blocks, permanently applying the 
 		   changes made in them. Print nothing if successful, 
 		   or print NO TRANSACTION if no transaction is in progress."""
-		stack = []
+		pass
 
 
 class Factory:
 	""" factory of command executions. """
 
 	def main(self):
-		""" main() function to instantiate two classes for Data and Transaction commands.
+		""" main() function to instantiate all classes for Data and Transaction commands.
 			standard input is read until END is input; otherwise, program
-			executes and displays the output of the commands. """
+			executes and displays the output of the commands. 
+
+			While standard inout is not END, each execution calls the corresponding function
+			to mimic the database commands. """
 
 		current_command = None
 		d = {}
@@ -174,20 +162,23 @@ class Factory:
 
 			# detect commands for transaction class
 			elif (userinput == BEGIN):
-				old_tables.append(d.copy())				
-				#old_commands = d.copy()
-				print old_tables
+				#old_tables.append(d.copy())				
+				#print old_tables
+				tranCommand.begin(d.copy(), old_tables)
 			
 			elif (userinput == ROLLBACK):
-				#tranCommand.rollback(d, old_commands)
-				old_commands = old_tables.pop()
-				if (old_commands == d):
+				if (len(old_tables) == 0):
 					sys.stdout.write(NOTRANSAC)
 				else:
-					d = old_commands
+					old_commands = old_tables.pop()
+					if (old_commands == d):
+						sys.stdout.write(NOTRANSAC)
+					else:
+						d = old_commands
 
 			elif (userinput == COMMIT):
-				old_commands = d
+				#old_commands = d
+				old_tables = []
 		
 			else:
 				current_command = userinput
