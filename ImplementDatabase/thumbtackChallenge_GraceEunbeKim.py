@@ -17,8 +17,9 @@ BEGIN      = "BEGIN"
 COMMIT     = "COMMIT"
 ROLLBACK   = "ROLLBACK"
 NULL       = "NULL"
-INCORRECT  = "Incorrect Commands"
+INCORRECT  = "Incorrect Command. Please check your input format."
 NOTRANSAC  = "NO TRANSACTION"
+NEWLINE    = "\n"
 
 class Commands:
 	"""	
@@ -41,9 +42,9 @@ class Commands:
 		try: 
 			d = self.d
 			if (name in d.keys()):
-				sys.stdout.write(d[name])
+				sys.stdout.write(d[name]+NEWLINE)
 			else:
-				sys.stdout.write(NULL)
+				sys.stdout.write(NULL+NEWLINE)
 		except KeyError, e:
 			print e
 		except IndexError, e:
@@ -82,7 +83,7 @@ class Data:
 			for k,v in d.items():
 				if (value == v):
 					count += 1
-			sys.stdout.write(str(count))
+			sys.stdout.write(str(count)+NEWLINE)
 		except KeyError, e:
 			print e
 		except IndexError, e:
@@ -120,6 +121,23 @@ class Transaction:
 class Factory:
 	""" factory of command executions. """
 
+	def inputCheck(self, words, command):
+		if (command == SET):
+			if (len(words) != 3):
+				sys.stdout.write(INCORRECT+NEWLINE)
+			else:
+				return True
+		elif (command == BEGIN or command == ROLLBACK or command == COMMIT or command == END):
+			if (len(words) != 1):
+				sys.stdout.write(INCORRECT+NEWLINE)
+			else:
+				return True
+		else:
+			if (len(words) != 2):
+				sys.stdout.write(INCORRECT+NEWLINE)
+			else:
+				return True
+
 	def main(self):
 		""" main() function to instantiate all classes for Data and Transaction commands.
 			standard input is read until END is input; otherwise, program
@@ -128,7 +146,6 @@ class Factory:
 			While standard inout is not END, each execution calls the corresponding function
 			to mimic the database commands. """
 
-		current_command = None
 		d = {}
 		old_commands = {}
 		old_tables = []
@@ -141,48 +158,48 @@ class Factory:
 			userinput = sys.stdin.readline().rstrip('\n')#.split(' ')
 			words = userinput.split(' ')
 
+			if (self.inputCheck(words, words[0])):
+				# execution ends
+				if userinput == END:
+					break
 
-			# execution ends
-			if userinput == END:
-				break
+				# new line detection
+				if userinput == ('\n'):
+					pass
 
-			# detect commands for command class
-			if (words[0] == SET):
-				commands.setVal(words[1], words[2])
+				# detect commands for command class
+				if (words[0] == SET):
+					commands.setVal(words[1], words[2])
 
-			elif (words[0] == GET):
-				commands.getVal(words[1])
+				elif (words[0] == GET):
+					commands.getVal(words[1])
 
-			elif (words[0] == UNSET):
-				commands.unsetVal(words[1])
+				elif (words[0] == UNSET):
+					commands.unsetVal(words[1])
 
-			# detect commands for data class
-			elif (words[0] == NUMEQUALTO):
-				dataCommand.runNumberQualTo(words[1])
+				# detect commands for data class
+				elif (words[0] == NUMEQUALTO):
+					dataCommand.runNumberQualTo(words[1])
 
-			# detect commands for transaction class
-			elif (userinput == BEGIN):
-				#old_tables.append(d.copy())				
-				#print old_tables
-				tranCommand.begin(d.copy(), old_tables)
-			
-			elif (userinput == ROLLBACK):
-				if (len(old_tables) == 0):
-					sys.stdout.write(NOTRANSAC)
-				else:
-					old_commands = old_tables.pop()
-					if (old_commands == d):
-						sys.stdout.write(NOTRANSAC)
+				# detect commands for transaction class
+				elif (userinput == BEGIN):
+					#old_tables.append(d.copy())				
+					#print old_tables
+					tranCommand.begin(d.copy(), old_tables)
+				
+				elif (userinput == ROLLBACK):
+					if (len(old_tables) == 0):
+						sys.stdout.write(NOTRANSAC+NEWLINE)
 					else:
-						d = old_commands
+						old_commands = old_tables.pop()
+						if (old_commands == d):
+							sys.stdout.write(NOTRANSAC+NEWLINE)
+						else:
+							d = old_commands
 
-			elif (userinput == COMMIT):
-				#old_commands = d
-				old_tables = []
-		
-			else:
-				current_command = userinput
-				print INCORRECT
+				elif (userinput == COMMIT):
+					#old_commands = d
+					old_tables = []
 
 f = Factory()
 f.main()
