@@ -31,13 +31,17 @@ class Commands:
 
 	def setVal(self, name, value):
 		"""Set the variable name to the value value. 
-		   Neither variable names nor values will contain spaces."""
+		   Neither variable names nor values will contain spaces.
+
+		   @param: name corresponds to the variable name which later a value is assigned to.
+		   @param: value corresponds to value that will be assigned to the name."""
 		d = self.d
 		d[name] = value
 
 	def getVal(self, name):
-		"""Print out the value of the variable name, 
-		   or NULL if that variable is not set."""
+		"""Standard out the value of the variable name, or NULL if that variable is not set.
+
+			@param: name corresponds to the variable name which a value is assigned to."""
 		try: 
 			d = self.d
 			if (name in d.keys()):
@@ -51,9 +55,10 @@ class Commands:
 		except Exception, e:
 			print e
 
-
 	def unsetVal(self, name):
-		"""Unset the variable name, making it just like that variable was never set."""
+		"""Unset the variable name, making it just like that variable was never set.
+
+			@param: name corresponds to the variable name which a value is assigned to."""
 		d = self.d
 		try:
 			if (name in d.keys()):
@@ -75,7 +80,9 @@ class Data:
 
 	def runNumberQualTo(self, value):
 		""" standard output for the number of variables that are currently set to value. 
-		    If no variables equal that value, writes 0"""
+		    If no variables equal that value, writes 0.
+
+		    @param: keys in a dictionary that is euqal to the param value are written out."""
 		d = self.d
 		count = 0
 		try:
@@ -99,7 +106,11 @@ class Transaction:
 
 	def begin(self, current_table, old_tables):
 		"""Open a new transaction block. Transaction blocks can be nested; 
-		   a BEGIN can be issued inside of an existing block."""
+		   a BEGIN can be issued inside of an existing block.
+
+		   @param: current_table is a block of commands that are executed before the begin call.
+		   @param: old_tables is a set of dictionaries store in a stack to keep tracking on
+		   			each begin blocks. """
 		old_tables.append(current_table)
 
 
@@ -122,7 +133,12 @@ class Factory:
 		it returns INCORRECT; otherwise, execute the command. """
 
 	def inputCheck(self, words, command):
-		""" """
+		""" inputCheck() determines if the database command is correctly formatted
+			before executing the command. If it's incorrect, standard output INCORRECT;
+			otherwise, return True. 
+
+			@param: words corresponds to each line of command, name and value if exsits. i.e. SET a 50.
+			@param: command corresponds to the command for the database such as SET or GET."""
 		if (command == SET):
 			if (len(words) != 3):
 				sys.stdout.write(INCORRECT+NEWLINE)
