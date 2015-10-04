@@ -9,14 +9,14 @@
 # Approach
 > I listed a brief explanation on how I approached each problem. This is not to say 'this approach is right, you must agree' but rather, to display how I generally see and tackle a problem.
 
-1. Each problem was given one or two sentence of details of the problem.
-2. What's next? Well, clearly, senders of the problems are my "customers". ask them to clarify any ambiguity. This also includes definiting assumptions and verifying a couple of use cases.
-3. Given that we have use cases and clarifications, now what are my requirements for this system design?
+1. Each problem has one or two sentence of details on what we want to solve.
+2. What's next? Well, clearly, senders of the problems are my "customers". ask them to clarify any ambiguity. This also includes defining assumptions and verifying a couple of use cases.
+3. Given that we have use cases and clarifications, now what are my requirements for this design?
 4. Draw out brief class, methods, inheritance and association structures. Also, writing test cases in advance.
 5. Wait to implement it, start writing skeleton of each class, methods and variables (no implementations) based on the structure designs I determined on step 4.
 6. Start filling out missing implementations. 
 7. Start debugging the problem! I have test cases defined early on. Let's use that to see what happens.
-8. Of course if your test cases pass for one time run, you are a genius or your test case sucks. I had to debug and fix multiple times.
+8. Of course if your test cases pass after the first run, you are a genius or your test case sucks. I had to debug and fix multiple times.
 9. Once pre-defined test cases are passed, think of more test cases to work around the edge cases.
 
 # Styling
