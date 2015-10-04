@@ -1,10 +1,11 @@
 # Problem Solving
-> I like tackling problems when there are freedom to design, explore my creativity, and constnatly evolving rather than accepting the current solution.
+> I like tackling problems when there are freedom to design, to explore my creativity, and to constnatly evolve rather than accepting the current solution. I think of problem solving as 'appreciating an art masterpiece and analyzing it'; it's not similar to solving a math problem. It requires creativity, some background information, and breaking it down to sub components and putting them together after all.
+
 | HTMLSyntaxChecker   | java  |
 | ImplementDatabase   | python, system design      |
 
 # Approach
-> I listed a brief explanation on how I approached each problem. 
+> I listed a brief explanation on how I approached each problem. This is not to say 'this approach is right, you must agree' but rather, to display how I generally see and tackle a problem.
 
 1. Each problem was given one or two sentence of details of the problem.
 2. What's next? Well, clearly, senders of the problems are my "customers". ask them to clarify any ambiguity. This also includes definiting assumptions and verifying a couple of use cases.
