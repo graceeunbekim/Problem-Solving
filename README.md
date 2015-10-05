@@ -1,5 +1,5 @@
 # Problem Solving
-> I like tackling problems when there are freedom to design, to explore my creativity, and to constnatly evolve rather than accepting the current solution. I think of problem solving as 'appreciating an art masterpiece and analyzing it'; it's not similar to solving a math problem. It requires creativity, some background information, and breaking it down to sub components and putting them together after all.
+> I like tackling problems when there are freedom to design, to explore my creativity, and to constantly evolve rather than accepting the current solution. I think of problem solving as 'appreciating an art masterpiece and analyzing it'; it's not similar to solving a math problem. It requires creativity, some background information, and breaking it down to sub components and putting them together after all.
 
 | Problems     | Language           | 
 | ------------- |:-------------:| 
